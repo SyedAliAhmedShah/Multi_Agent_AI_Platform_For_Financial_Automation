@@ -1,0 +1,217 @@
+---
+config:
+  layout: elk
+---
+flowchart TD
+ subgraph PayrollAgent[" "]
+    direction TB
+        P1["FetchPayrollData
+• Retrieves: Emp records
+• Sources: Attendance sheets
+• Output: Raw payroll data"]
+        P2["CalculateSalaries
+• Processes: Base pay
+• Calculates: Deductions/Bonuses
+• Output: Net salaries"]
+        P3["GeneratePayslips
+• Creates: PDF Payslips
+• Stores: /payslips/
+• Formats: Company branding"]
+        P4["SendPayslips
+• Delivers: Via email
+• Uses: Gmail API
+• Tracks: Sent status"]
+  end
+ subgraph InvoiceAgent[" "]
+    direction TB
+        I1["CreateInvoices
+• Generates: Customer PDFs
+• Pulls: Order history
+• Output: /invoices/"]
+        I2["SendInvoices
+• Emails: Customers
+• Attaches: PDF
+• Logs: Delivery"]
+        I3["RemindOverdue
+• Identifies: Late payments
+• Sends: Escalating reminders
+• Includes: Payment link"]
+        I4["MarkPaid
+• Updates: Sheet status
+• Flags: Paid/Unpaid
+• Syncs: Accounting"]
+  end
+ subgraph ReportAgent[" "]
+    direction TB
+        R1["FetchFinancialData
+• Retrieve: Metrixs for Income statements
+• Pulls: Balance sheets Metrixs 
+• Gathers: Cash flows"]
+        R2["CalculateMetrics
+• Computes: Net-Profit
+• Analyzes: Equity
+• Tracks: Cash position"]
+        R3["GenerateCharts & Insights
+• Visualizes: Yearly Trends (2023-25)
+• Creates: PNG files
+• Annotates: Key insights by LLM"]
+        R4["GenerateSummary
+• Uses: LLM analysis
+• Highlights: Yearly KPIs Comparisons
+• Flags: Anomalies"]
+        R5["CreatePDF
+• Compiles: Full report
+• Designs: Professional layout
+• Output: /reports/"]
+        R6["SendReport
+• Distributes: To stakeholders
+• Secures: BCC delivery
+• Uses Gmail API"]
+  end
+ subgraph ProcurementAgent[" "]
+    direction TB
+        PR1["FetchProcurementData
+• Sources:
+          - Purchase Orders
+          - Budget Allocations
+          - Spend Records
+          - Inventory Levels"]
+        PR2["BudgetProcessor
+• Compares: PO vs budget
+• Flags: Exceedances/Within
+• Outputs: Status"]
+        PR3["InventoryProcessor
+• Monitors: Stock levels
+• Alerts: Reorder points
+• Updates: Suppliers"]
+        PR4["ApprovalProcessor
+• Auto-approves: Valid POs
+• Escalates: Exceptions
+• Logs: Decisions"]
+        PR5["Notifier
+• Sends: Approval requests
+• Includes: LLM suggestions
+• Recipient: Procurement Team"]
+        PR6["GenerateReport
+• Consolidates: All data
+• Analyzes: Vendor perf.
+• Recommends: Actions"]
+        PR8["SendReport
+• Targets: Management
+• Attaches: Analysis"]
+  end
+ subgraph MultiAgentSystem["Multi-Agent System Coordinates all financial automation workflows"]
+    direction TB
+        Router[["Router Agent
+• Analyzes task intent using LLM
+• Routes to appropriate agent
+• Handles fallback scenarios"]]
+        PayrollAgent
+        InvoiceAgent
+        ReportAgent
+        ProcurementAgent
+        SharedData[("Shared Data Store
+• Centralized data access
+• Real-time updates
+• Stock reports")]
+  end
+    PayrollDB[("Payroll DB
+• Employee records
+ from HR System")] --> P1
+    InvoicingDB[("Invoicing DB
+• Customer data
+• Product catalog")] --> I1
+    FinancialDB[("Financial DB
+• Financial Metrics
+ Store")] --> R1
+    ProcurementDB[("Procurement DB
+• Purchase orders
+• Inventory details")] --> PR1
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    I1 --> I2
+    I2 --> I3
+    I3 --> I4
+    R1 --> R2
+    R2 --> R3
+    R3 --> R4
+    R4 --> R5
+    R5 --> R6
+    PR1 --> PR2
+    PR2 --> PR3
+    PR3 --> PR4
+    PR4 --> PR5
+    PR5 --> PR6
+    PR6 --> PR8
+    Input@{ label: "User Task\n(e.g. 'Process March payroll'\nor 'Send client invoices')" } --> Router
+    Router -- Payroll --> PayrollAgent
+    Router -- Invoice --> InvoiceAgent
+    Router -- Report --> ReportAgent
+    Router -- Procurement --> ProcurementAgent
+    PayrollAgent -.-> SharedData
+    InvoiceAgent -.-> SharedData
+    ReportAgent -.-> SharedData
+    ProcurementAgent -.-> SharedData
+    PayrollAgent -.- PayrollLabel["Payroll Agent
+• Manages employee compensation
+• HR system Data integration
+• End-to-end processing"]
+    InvoiceAgent -.- InvoiceLabel["Invoice Agent
+• Handles billing lifecycle
+• Automated reminders
+• Payment tracking"]
+    ReportAgent -.- ReportLabel["Report Agent
+• Financial analytics
+• Automated insights
+• Stakeholder reporting"]
+    ProcurementAgent -.- ProcurementLabel["Procurement Agent
+• Purchase order mgmt.
+• Inventory control
+• Approval workflows"]
+    Input@{ shape: trap-t}
+     P1:::tool
+     P2:::tool
+     P3:::tool
+     P4:::tool
+     I1:::tool
+     I2:::tool
+     I3:::tool
+     I4:::tool
+     R1:::tool
+     R2:::tool
+     R3:::tool
+     R4:::tool
+     R5:::tool
+     R6:::tool
+     PR1:::tool
+     PR2:::tool
+     PR3:::tool
+     PR4:::tool
+     PR5:::tool
+     PR6:::tool
+     PR8:::toolColored
+     Router:::Sky
+     SharedData:::dataStore
+     PayrollDB:::dataStore
+     InvoicingDB:::dataStore
+     FinancialDB:::dataStore
+     ProcurementDB:::dataStore
+     Input:::dataStore
+     Input:::Sky
+     PayrollLabel:::label
+     InvoiceLabel:::label
+     ReportLabel:::label
+     ProcurementLabel:::label
+    classDef tool fill:#e6f7ff,stroke:#333,stroke-dasharray:0
+    classDef toolColored fill:#e6f7ff,stroke:#4CAF50,stroke-width:3px
+    classDef agent fill:#f8f8f8,stroke:#666,stroke-width:2px
+    classDef label fill:#f5f5f5,stroke:#ddd,stroke-width:1px
+    classDef dataStore fill:#fff2cc, stroke:#d6b656, stroke-width:2px
+    classDef Sky stroke-width:1px, stroke-dasharray:none, stroke:#374D7C, fill:#E2EBFF, color:#374D7C
+    style PR8 stroke:#757575
+    style PayrollLabel stroke:#000000
+    style InvoiceLabel stroke:#000000
+    style ReportLabel stroke:#000000
+    style ProcurementLabel stroke:#000000
+    style MultiAgentSystem fill:#fafafa,stroke:#333,stroke-width:3px

@@ -1,0 +1,33 @@
+# Python cache and environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+
+# Credential & API secrets
+client_secret.json
+service_account.json
+token.json
+
+# Fonts and large binary files
+*.pkl
+*.ttf
+dejavu-fonts-ttf-2.37/
+*.cw127.pkl
+
+# Invoices and payslips (generated outputs)
+invoices/
+payslips/
+reports/
+*.pdf
+
+# Office documents
+*.docx
+
+# System files
+.DS_Store
+Thumbs.db
+
+*.mp4
